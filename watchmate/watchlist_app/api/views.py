@@ -12,7 +12,7 @@ class MovielistView(APIView):
 
     def get(self, request):
         movies = Movie.objects.all()
-        serializer = MovieSerializer
+        serializer = MovieSerializer(movies,many=True)
 
         return Response(serializer.data)
 
@@ -25,6 +25,30 @@ class MovielistView(APIView):
             return Response(serializer.errors )
 
 class MovieDetailView(APIView):
+
+    def get(self,request,pk):
+        try:
+            movie = Movie.objects.get(pk=pk)
+        except Movie.DoesNotExist:
+            return Response({'error':'movie not found'},status=HTTP_404_NOT_FOUND)
+        serializer = MovieSerializer(movie)
+
+        return Response(serializer.data)
+
+    def put(self,request,pk):
+        movie = Movie.objects.get(pk=pk)
+        serializer = MovieSerializer(movie,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request,pk):
+        movie = Movie.objects.get(pk=pk)
+        movie.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 """FUNCTION BASED VIEW"""

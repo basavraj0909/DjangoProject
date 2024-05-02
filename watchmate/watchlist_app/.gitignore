@@ -1,0 +1,3 @@
+watchmate/db.sqlite3
+*.pyc
+watchmate/.idea/
